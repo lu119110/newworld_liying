@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CrmXposSalesCompareSM">	
+	<resultMap id="getDaySalseRet" class="java.util.HashMap">
+		<result property="txdate" column="txdate" />
+		<result property="sold" column="sold" />
+	</resultMap>
+	<select id="getDaySalse" parameterClass="java.util.Map"
+		resultMap="getDaySalseRet">
+
+
+SELECT sum(AL1.salesdr - AL1.salescr) as sold ,  AL1.txdate as txdate FROM dayten AL1 WHERE AL1.txdate =#txdate#
+group by AL1.txdate
+
+	</select>
+
+	
+
+</sqlMap>
+

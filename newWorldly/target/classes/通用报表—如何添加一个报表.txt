@@ -1,0 +1,110 @@
+1. 修改的地方
+   .需要新增一个页面，复制src\main\resources\static\DS\Reports\ReportDemo.html 作为报表页面模板。报表的功能就是查询和导出excel，而且ecxel不能定制格式只是把内容写入。
+   .数据库查询语句 在src\main\java\com\newWorldly\applicationDS\dao\ReportsSql.xml文件中增加。
+   .在左侧菜单栏增加新报表页面的连接。
+2. 报表页面
+   复制ReportDemo.html到同级目录下 例如：Rep_DayRep1.html1
+   在eclips里，或ue等文本工具打开Rep_DayRep1.html1文件
+   
+	--增加或修改查询条件：页面中所有的查询框都在<form class="form-inline" role="form">  </form>这对标签中，
+	  根据需要增加文本输入框，下拉框，日期框等，但是查询按钮和导出按钮不能变化也不能增加。
+	  增加条件html标签时需要注意和记住的内容：是标签的id和name属性，这两个值设置成一样并且在后面修改查询参数时有用
+	  例如：日期输入框标签<input type="text" value="" readonly id="startDate" name="startDate" class="form-control" /> 设置好id="startDate" name="startDate"并记住值
+		在例如店铺下拉框        <select name="store" id="store" class="form-control">
+						<option value="">全部</option>
+						<option value="11014">11014百货</option>
+						<option value="S0071">S0071超市</option>
+					</select>
+		
+	
+		设置好name="store" id="store"的并记住值。
+
+	--修改查询显示结果区：在页面的<div class="span12" id="table_content"> </div>中
+	  ----修改表头：例如	<table id="tbStu" class="table">
+					<thead>
+						<tr>
+							<th>时间</th>
+							<th>消费金额</th>
+
+						</tr>
+					</thead>
+		  <th>标签是表头可以增加修改删除
+
+	  ----修改表字段
+			 标签<tbody>
+						<tr v-for="(uitem,index) in ulist" class='[index%2 === 1 ? "success" : "" ]' >  
+							<td >{{uitem.时段}}</td>
+							<td>{{uitem.销售额}}</td>
+
+						</tr>
+						
+			     </tbody>	
+
+			 <td>标签是结果字段	
+		         按照查询的sql语句的字段增加删除修改td标签{{uitem.时段}}其中只需要修改“时段”为对应的字段名称就可以新增也是如此，例如新增
+			<td >{{uitem.vipcode}}</td>
+	--修改查询按钮函数
+		function getReort(){
+			var sqlMapKey="reportsDS.getReortDemo";
+			if($("#startDate").val()==null || $("#startDate").val()==""){
+				alert("请输入日期");
+				return ;
+			}
+
+			var queryData={"sqlMapKey":sqlMapKey,"txdate":$("#startDate").val(),"startdate":$("#startDate").val(),"enddate":$("#endDate").val()};
+			$.ajax({ 
+				type : "POST", 
+				url : "getReport.do?random="+Math.random(), 
+				data :JSON.stringify(queryData), 
+				contentType:"application/json",
+				dataType : "json", 
+				success : function(data) {  vm.ulist=data;} 
+				});
+		}
+		
+		----修改sqlMapKey，这个对应后台执行那个sql语句。只需修改“reportsDS.”后面的值。例如：sqlMapKey="reportsDS.getReortDayRep1";
+		----修改提交到后台的参数：var queryData={"sqlMapKey":sqlMapKey,"txdate":$("#startDate").val(),"startdate":$("#startDate").val(),"enddate":$("#endDate").val()};
+		queryData内容是json格式即key:value，每个参数之间用逗号分割。"sqlMapKey":sqlMapKey,这个参数必须有且不用改变。后面的参数根据查询条件自行增加修改删除，举例说明：
+		"startdate":$("#startDate").val() 中"startdate"是提交到后台sql的条件的带入值这个自己随便去但要记住，$("#startDate").val()这个是获取页面输入框的值修改“startDate”
+		为前面我们提到的输入标签的id和name值。
+	--修改导出excel按钮函数
+		与查询按钮函数类似修改下面这两行
+		var sqlMapKey="reportsDS.getReortDemo";
+		通常这个和查询是一个sql所以不用改
+		var queryData={"sqlMapKey":sqlMapKey,"txdate":$("#startDate").val(),"startdate":$("#startDate").val(),"enddate":$("#endDate").val()};
+		这个和查询按钮通常是一样的复制过来就可以了。
+
+
+3. 后台添加查询sql语句
+	--修改文件src\main\java\com\newWorldly\applicationDS\dao\ReportsSql.xml
+	参考现有查询添加新的，解释一些下面的内容
+	<resultMap id="getReortDemoRet" class="java.util.HashMap">
+		<result property="时段" column="txhour" />
+		<result property="销售额" column="amtsold" />
+	</resultMap>
+	<select id="getReortDemo" parameterClass="java.util.Map"
+		resultMap="getReortDemoRet">
+		select txhour, sum(amtsold) as amtsold from cathm
+		where
+		txdate=#txdate#
+		group by txhour
+		order by txhour
+	</select>
+
+	<resultMap>标签是返回的查询结果的结构，首先定义一个id，这个是给下面select标签用的，<result property="时段" column="txhour" />这个就是字段了，proerty是返回的结果里字段的名称
+和上面提到的页面中的<tr v-for="(uitem,index) in ulist" class='[index%2 === 1 ? "success" : "" ]' >  
+							<td >{{uitem.时段}}</td>
+							<td>{{uitem.销售额}}</td>
+
+						</tr>
+这几个有关uitem.时段，这里中英文都无所谓只要能对应上就行，但是导出excel文件时如果希望表头是中文那么这里就必须用中文定义。column="txhour"对应下面select不标签理查询语句中的字段select txhour
+
+
+<select>标签 id自己定义，需要和上面页面中提到的sqlMapKey="reportsDS.getReortDemo";有关系要对应上。resultMap="getReortDemoRet"要和上面的resultMap标签的id一致。
+	查询条件的定义where txdate=#txdate# 其中#txdate#这个适合页面中的var queryData={"sqlMapKey":sqlMapKey,"txdate":$("#startDate").val(),"startdate":$("#startDate").val(),"enddate":$("#endDate").val()};
+这里面的txdate有关会把相关的值带入到sql语句中。
+
+通过以上的修改就可以完成一个简单报表的查询和导出功能
+	  	
+		    	
+	
