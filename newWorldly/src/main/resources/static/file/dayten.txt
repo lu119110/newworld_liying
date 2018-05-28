@@ -1,1 +1,0 @@
-SELECT AL1.tillid, SUM ( AL1.salesdr - AL1.salescr ) FROM dbo.dayten AL1 WHERE (AL1.txdate={ts '2015-10-21 00:00:00.000'}) GROUP BY AL1.tillid
