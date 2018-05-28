@@ -1,0 +1,296 @@
+
+<html>
+<head>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="This is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+<title></title>
+<link href="../../css/ichartdemo.css" type="text/css" />
+<script type="text/javascript" src="../../js/ichart.1.2.min.js"></script>
+<link type="text/css" rel="stylesheet"
+	href="../../css/dhtmlgoodies_calendar.css?random=20051112"
+	media="screen"></link>
+<script type="text/javascript"
+	src="../../js/dhtmlgoodies_calendar.js?random=20060118"></script>
+<script type="text/javascript"
+	src="../../js/common_util.js?"++Math.random()></script>
+<link href="../../css/mine.css" type="text/css" rel="stylesheet" />
+<script language="JavaScript"
+	src="../../js/jquery-1.11.3.min.js"></script>
+<script language="JavaScript"
+	src="../../js/DayTimeSalesBarChart.js"
+	charset="UTF-8"></script>
+<script></script>
+</head>
+<body>
+	<style>
+.tr_color {
+	background-color: #9F88FF
+}
+</style>
+	<div class="div_head">
+		<span> <span style="float: left;">商场分时段日销售对比</span> </span>
+	</div>
+	<div></div>
+	<div class="div_search">
+		<span>
+			<form>
+				<span style="float: left; margin-right: 8px; font-weight: bold;">日期1：<input
+					class="inputC" type="text" value="" readonly id="startDate1">
+					<input type="button" value="..."
+					onclick="displayCalendar(document.forms[0].startDate1,'yyyy-mm-dd', this);">
+				</span> <span style="float: left; margin-right: 8px; font-weight: bold;">日期2：<input
+					class="inputC" type="text" value="" readonly name="startDate2"
+					id="startDate2"> <input type="button" value="..."
+					onclick="displayCalendar(document.forms[0].startDate2,'yyyy-mm-dd', this);">
+				</span> <span style="float: left; margin-right: 8px; font-weight: bold;">日期3：<input
+					class="inputC" type="text" value="" readonly name="startDate3"
+					id="startDate3"> <input type="button" value="..."
+					onclick="displayCalendar(document.forms[0].startDate3,'yyyy-mm-dd', this);">
+				</span>
+			</form> <span class="clsync"
+			style="float: left; margin-right: 8px; font-weight: bold"> <a
+				style="text-decoration: none;font-size:18px"
+				href="javascript:getSales()">查询</a> </span> <span class="clsync"
+			style="float: left; margin-right: 8px; font-weight: bold"> <a
+				style="text-decoration: none;font-size:18px"
+				href="javascript:clearAll()">清除条件</a> </span> <span class="clsync"
+			style="float: left; margin-right: 8px; font-weight: bold;"><select 
+				id="chartStyle">
+					<option value="2D" selected>2D图形</option>
+					<option value="3D">3D图形</option>
+
+			</select> </span>
+	</div>
+	<h1></h1>
+	<div id='canvasDiv'></div>
+
+
+</body>
+<script type="text/javascript">
+	Array.prototype.unique = function() {
+		var res = [];
+		var json = {};
+		for ( var i = 0; i < this.length; i++) {
+			if (!json[this[i]]) {
+				res.push(this[i]);
+				json[this[i]] = 1;
+			}
+		}
+		return res;
+	}
+	$(function() {
+		var d = new Date();
+		currentMonth = d.getMonth();
+		currentMonth++;
+
+		if (currentMonth < 10) {
+			currentMonth = "0" + currentMonth;
+		}
+		currentDay = d.getDate();
+		if (currentDay < 10) {
+			currentDay = "0" + currentDay;
+		}
+		currentYear = d.getFullYear();
+
+		day1 = currentYear + "-" + currentMonth + "-" + currentDay;
+		$("#startDate1").val(day1);
+		//$("#startDate2").val(day1);
+		//$("#startDate3").val(day1);
+	});
+
+	var day1;
+	var day2;
+	var day3;
+	
+	function clearAll(){
+		$("#startDate1").val("");
+		$("#startDate2").val("");
+		$("#startDate3").val("");
+	}
+	function getSales() {
+	var totalDay1Sales=0,totalDay2Sales=0,totalDay3Sales=0;
+		var day1RetJson = new Array(), day2RetJson = new Array(), day3RetJson = new Array();
+		if($("#startDate1").val()==null || $("#startDate1").val()==""){
+			alert("请输入日期1");
+			return ;
+		}
+		$.ajaxSetup({
+			async : false
+		});
+		//后台获取日销售额
+		$.post("./getDSDayTimeSalesChart.do?random="+Math.random(),
+				"txdate=" + $("#startDate1").val(), function(ret) {
+					day1RetJson=ret;
+					//day1RetJson = eval('(' + ret + ')'); //如果response header是Content-Type: text/html;charset=UTF-8 就需要 eval函数
+					//如果是Content-Type: application/json;charset=UTF-8就不需要eval函数
+					//alert(day1RetJson[0].amtsold);
+				});
+				for(i=0;i<day1RetJson.length;i++){
+					totalDay1Sales+=parseFloat(day1RetJson[i].amtsold);
+				}
+		//alert("day1RetJson:"+day1RetJson);
+		if ($("#startDate2").val() != null && $("#startDate2").val() !='') {
+			$
+					.post(
+							"./getDSDayTimeSalesChart.do?random="+Math.random(),
+							"txdate=" + $("#startDate2").val(), function(ret) {
+								day2RetJson=ret;
+								//day2RetJson = eval('(' + ret + ')');
+
+							});
+							for(i=0;i<day2RetJson.length;i++){
+								totalDay2Sales+=parseFloat(day2RetJson[i].amtsold);
+							}
+		}
+		
+		if ($("#startDate3").val() != null && $("#startDate3").val() != '') {
+			$
+					.post(
+							"./getDSDayTimeSalesChart.do?random="+Math.random(),
+							"txdate=" + $("#startDate3").val(), function(ret) {
+								day3RetJson=ret;
+								//day3RetJson = eval('(' + ret + ')');
+	
+							});
+							
+							for(i=0;i<day3RetJson.length;i++){
+								totalDay3Sales+=parseFloat(day3RetJson[i].amtsold);
+							}
+		}
+		//变成图表用的数据
+		var hourArray = new Array();
+		var i = 0;
+		if (day1RetJson != null && day1RetJson.length > 0) {
+			for (i = 0; i < day1RetJson.length; i++) {
+				hourArray.push(day1RetJson[i].txhour);
+			}
+		}
+		if (day2RetJson != null && day2RetJson.length > 0) {
+			for (i = 0; i < day2RetJson.length; i++) {
+				hourArray.push(day2RetJson[i].txhour);
+			}
+		}
+		if (day3RetJson != null && day3RetJson.length > 0) {
+			for (i = 0; i < day3RetJson.length; i++) {
+				//alert(day3RetJson[i].txhour);
+				hourArray.push(day3RetJson[i].txhour);
+			}
+		}
+		hourArray.sort(sortNumber);
+		hourArray = hourArray.unique();
+		var charData1 = appendChartDataArry(hourArray, day1RetJson);
+		if ($("#startDate2").val() != null && $("#startDate2").val() != '') {
+			var charData2 = appendChartDataArry(hourArray, day2RetJson);
+		}
+		if ($("#startDate3").val() != null && $("#startDate3").val() != '') {
+			var charData3 = appendChartDataArry(hourArray, day3RetJson);
+		}
+		//alert(charData1);
+		//alert(charData2);
+		//alert(charData3);
+		//画图
+		var data = [ {
+			name : $("#startDate1").val() ,
+			value : 0,
+			color : '#1385a5'
+		} ];
+		if ($("#startDate2").val() != null && $("#startDate2").val() != '') {
+			var arr2={
+					name : $("#startDate2").val(),
+					value :charData2,
+					color : '#c56966'
+				}
+			data.push(arr2);
+		}
+		if ($("#startDate3").val() != null && $("#startDate3").val() != '') {
+			var arr3={
+					name : $("#startDate3").val(),
+					value :charData3,
+					color : '#76a871'
+				}
+			data.push(arr3);
+		}
+		data[0].value = charData1;
+		//data[1].value = charData2;
+		//data[2].value = charData3;
+		var maxValue=charData1[0];
+		for(i=1;i<charData1.length;i++){
+			if(charData1[i]>maxValue){
+				maxValue=charData1[i];
+				
+			}
+		}
+		if(charData2!=null && charData2.length>0){
+			for(i=0;i<charData2.length;i++){
+			if(charData2[i]>maxValue){
+				maxValue=charData2[i];
+				}
+			}
+		}
+		if(charData3!=null && charData3.length>0){
+			for(i=0;i<charData3.length;i++){
+			if(charData3[i]>maxValue){
+				maxValue=charData3[i];
+			}
+			}
+		}		
+		
+		//maxValue 单位是万
+		end_scale=parseInt(maxValue/10)*10+30;
+		var date1Slit = $("#startDate1").val().split("-");
+		var chartSubtitle = date1Slit[0] + "年" + date1Slit[1] + "月"
+				+ date1Slit[2] + "日"+" 金额:"+toThousands(totalDay1Sales)+"\n";
+		if ($("#startDate2").val() != null && $("#startDate2").val() != '') {
+			var date2Slit = $("#startDate2").val().split("-");
+			chartSubtitle += date2Slit[0] + "年" + date2Slit[1] + "月"
+					+ date2Slit[2] + "日" + " 金额:"+toThousands(totalDay2Sales)+"\n";
+
+		}
+		if ($("#startDate3").val() != null && $("#startDate3").val() != '') {
+			var date3Slit = $("#startDate3").val().split("-");
+			chartSubtitle += date3Slit[0] + "年" + date3Slit[1] + "月"
+					+ date3Slit[2] + "日" + " 金额:"+toThousands(totalDay3Sales);
+
+		}
+		//alert($("#chartStyle").val());
+		if($("#chartStyle").val()=="2D"){
+			draw2DBar(data,hourArray,chartSubtitle,end_scale);
+		}else{
+			draw3DBar(data,hourArray,chartSubtitle,end_scale);
+		}
+
+	}
+	
+	function appendChartDataArry(hourArray, daySJson) {
+		var charData = new Array();
+		var tmp, tmp2;
+		if (daySJson == null || daySJson.length == 0) {
+			for (i = 0; i < hourArray.length; i++) {
+				charData.push(0);
+			}
+		} else {
+			for (i = 0; i < hourArray.length; i++) {
+				tmp = daySJson.filter(function(a) {
+					return a.txhour == hourArray[i];
+				});
+				if (tmp == null || tmp.length == 0) {
+					tmp2 = 0;
+				} else {
+					tmp2 = tmp[0].amtsold/10000;
+					tmp2=Math.round(parseFloat(tmp2)*100)/100;//保留两位小数，到百位
+				}
+				charData.push(tmp2);
+			}
+		}
+		return charData;
+	}
+	function sortNumber(a, b) {
+		return a - b;
+	}
+</script>
+</html>

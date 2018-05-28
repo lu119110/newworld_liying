@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DayTimeSalesDS">
+	<resultMap id="getDayTimeSalseRet" class="java.util.HashMap">
+		<result property="txhour" column="txhour" />
+		<result property="amtsold" column="amtsold" />
+	</resultMap>
+	<select id="getDayTimeSalse" parameterClass="java.util.Map"
+		resultMap="getDayTimeSalseRet">
+		select txhour, sum(amtsold) as amtsold from cathm
+		where
+		txdate=#txdate#
+		group by txhour
+		order by txhour
+	</select>
+
+	
+
+</sqlMap>
+
