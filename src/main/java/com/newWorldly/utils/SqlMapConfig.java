@@ -18,6 +18,7 @@ public class SqlMapConfig {
 	private static  SqlMapClient sqlMapperSmSource;
 	private static  SqlMapClient sqlMapperOldDsSource;
 	private static SqlMapClient sqlMapperIQVIpSource;
+	private static SqlMapClient sqlMapperLySource; 
 
 	static {
 		try {
@@ -33,7 +34,11 @@ public class SqlMapConfig {
 			reader.close();
 			reader = Resources.getResourceAsReader("SqlMapConfig_sm_source.xml");
 			sqlMapperSmSource= SqlMapClientBuilder.buildSqlMapClient(reader);
-			reader.close();			
+			reader.close();
+			reader = Resources.getResourceAsReader("SqlMapConfig_ly_source.xml");
+			sqlMapperLySource=SqlMapClientBuilder.buildSqlMapClient(reader);
+			reader.close();
+			
 			/*reader = Resources.getResourceAsReader("SqlMapConfig_ds_source_conxpos.xml");
 			sqlMapperDsSourceConxpos= SqlMapClientBuilder.buildSqlMapClient(reader);
 			reader.close();	*/
@@ -47,6 +52,9 @@ public class SqlMapConfig {
 	}
 
 
+	public static SqlMapClient getSqlMapperLySource() {
+		return sqlMapperLySource;
+	}
 	public static SqlMapClient getSqlMapDsSource() {
 		return sqlMapperDsSource;
 	}
