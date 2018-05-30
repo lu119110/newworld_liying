@@ -36,14 +36,14 @@ public class ContrllorInterceptor {
     private static final String execution_str_04 = "execution(* com.newWorldly.applicationDS.controller..*(..))";//controller包或子包下任意方法  
 
 
-    //@Pointcut(execution_str_01)  
+    @Pointcut(execution_str_01)  
     private void controllerCut() {
     	
     	
     }  
   
     //@Before(value = "controllerCut()")  
-   // @Around(value = "controllerCut()") 
+    @Around(value = "controllerCut()") 
     public Object cutBefore(ProceedingJoinPoint pjp) throws Throwable {  
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();  
         HttpServletRequest httpServletRequest = requestAttributes.getRequest();  
