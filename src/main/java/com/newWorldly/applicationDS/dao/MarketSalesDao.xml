@@ -52,6 +52,7 @@
 	DeptStyle.stylecode as stylecode,style.styledesci as styledesci
  	FROM basic ,DeptStyle,style
  	where basic.dept=#dept# and basic.dept=DeptStyle.deptcode and DeptStyle.stylecode=style.stylecode
+ 	order by basic.brand,DeptStyle.stylecode
 	</select>
 
 </sqlMap>
