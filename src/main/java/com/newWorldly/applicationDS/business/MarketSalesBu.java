@@ -3,6 +3,7 @@ package com.newWorldly.applicationDS.business;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -58,12 +59,34 @@ public class MarketSalesBu {
 			retList=sqlMap.queryForList("MarketSales.getseason", paramMap);
 			return retList;
 		}
-	 public List getBrand(String dept) throws SQLException{
+	 public List getBrand(String dept,String week,String seasoncode) throws SQLException{
 		 List retList=null;
 			Map paramMap=new HashMap();
 			paramMap.put("dept",dept);
+			paramMap.put("week",week);
+			paramMap.put("seasoncode",seasoncode);
 			
 			retList=sqlMap.queryForList("MarketSales.getBrand", paramMap);
 			return retList;
+	 }
+	 public void saveSales(List<Map> dataLst) throws SQLException{
+		try {
+		 sqlMap.startTransaction();
+		 Iterator it=dataLst.iterator();
+		 Map dataMap;
+		 while(it.hasNext()) {
+			 dataMap=(Map) it.next();
+			 if(dataMap.get("id")!=null) {
+				 sqlMap.delete("MarketSales.delDataImport", dataMap);
+			 }
+			 sqlMap.insert("MarketSales.insertDataImport", dataMap);
+		 }
+		 sqlMap.commitTransaction();
+		}catch(Exception ex) {
+			throw ex;
+		}finally {
+			sqlMap.endTransaction();
+		}
+	 
 	 }
 }

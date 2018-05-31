@@ -26,6 +26,8 @@ import net.sf.json.JSONArray;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.JavaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -85,8 +87,27 @@ public class MarketSalesContr {
 			HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		String dept=request.getParameter("dept");
-		List reList=mbu.getBrand(dept);
+		String week=request.getParameter("week");
+		String seasoncode=request.getParameter("season");
+		
+		List reList=mbu.getBrand(dept,week,seasoncode);
 		return reList;
 	}
+	@RequestMapping("/DS/MarketDepReport/saveSales.do")
+	public Map saveSales(
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		String reqStr=request.getParameter("reqStr");
+		ObjectMapper mapper = new ObjectMapper();
+		JavaType javaType = mapper.getTypeFactory().constructParametricType(List.class, Map.class);  
+		List<Map> lst =  (List<Map>)mapper.readValue(reqStr, javaType);  
+		mbu.saveSales(lst);
+		Map retMap=new HashMap();
+		retMap.put("error", "0");
+		
+	
+		return retMap;
+	}
+	
 	
 }
