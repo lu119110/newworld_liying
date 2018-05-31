@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="MarketSales">	
+	<resultMap id="getDeptRet" class="java.util.HashMap">
+		<result property="dept" column="dept" />
+		<result property="ddesci" column="ddesci" />
+	</resultMap>
+	<select id="getDept" parameterClass="java.util.Map"
+		resultMap="getDeptRet">
+		SELECT distinct dept ,ddesci  FROM basic
+
+	</select>
+
+	<resultMap id="getStyleRet" class="java.util.HashMap">
+		<result property="stylecode" column="stylecode" />
+		<result property="styledesci" column="styledesci" />
+	</resultMap>
+	<select id="getStyle" parameterClass="java.util.Map"
+		resultMap="getStyleRet">
+		SELECT distinct stylecode ,styledesci  FROM style
+
+	</select>
+
+
+	<resultMap id="getseasonRet" class="java.util.HashMap">
+		<result property="seasoncode" column="seasoncode" />
+		<result property="seasondesci" column="seasondesci" />
+	</resultMap>
+	<select id="getseason" parameterClass="java.util.Map"
+		resultMap="getseasonRet">
+		SELECT seasoncode ,seasondesci
+  		FROM season
+
+	</select>
+	
+	<resultMap id="getBrandRet" class="java.util.HashMap">
+		<result property="brand" column="brand" />
+		<result property="bdesci" column="bdesci" />
+		<result property="dept" column="dept" />
+		<result property="ddesci" column="ddesci" />
+		<result property="stylecode" column="stylecode" />
+		<result property="styledesci" column="styledesci" />
+		
+	</resultMap>
+	<select id="getBrand" parameterClass="java.util.Map"
+		resultMap="getBrandRet">
+		
+	SELECT  basic.ID as id ,basic.brand as brand ,basic.bdesci as bdesci ,basic.dept as dept,basic.ddesci as ddesci,
+	DeptStyle.stylecode as stylecode,style.styledesci as styledesci
+ 	FROM basic ,DeptStyle,style
+ 	where basic.dept=#dept# and basic.dept=DeptStyle.deptcode and DeptStyle.stylecode=style.stylecode
+	</select>
+
+</sqlMap>
+

@@ -4,9 +4,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+//@Controller
 public class DefaultContr {
-	@RequestMapping("/")
+	//@RequestMapping("/")
 	public String indexHtml() {
 		return "forward:Login.html";
 	}

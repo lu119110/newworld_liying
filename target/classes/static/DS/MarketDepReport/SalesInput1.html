@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>销售录入</title>
+
+
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="This is my page">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+<link href="../../css/mine.css" type="text/css" rel="stylesheet" />
+<link href="../../css/bootstrap.min.css" rel="stylesheet">
+<link type="text/css" rel="stylesheet"
+	href="../../css/dhtmlgoodies_calendar.css?random=20051112">
+<script type="text/javascript"
+	src="../../js/dhtmlgoodies_calendar.js?random=20060118"></script>
+<script type="text/javascript" src="../../js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="../../js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../js/vue.js"></script>
+<script type="text/javascript">
+var vm;
+var vmStyle;
+var vmbrand;
+$(function() {
+	vm = new Vue({
+		el : "#varietydiv",
+		data : {
+			ulist : ""
+		},
+		updated : function() {
+			//$("#tbStu tr:nth-child(even)").addClass("success");
+		}
+
+	});
+	vmStyle = new Vue({
+		el : "#stylediv",
+		data : {
+			stylelist : ""
+		},
+		updated : function() {
+			//$("#tbStu tr:nth-child(even)").addClass("success");
+		}
+
+	});
+	vmbrand = new Vue({
+		el : "#table_content",
+		data : {
+			brandlist : ""
+		},
+		updated : function() {
+		}
+
+	});
+	$.post("getAllSesson.do?random=" + Math.random(), "", function(ret) {
+		if (ret.error == "-1") {
+			alert(ret.msg);
+			top.location.href = "/NewWorld_LIYING/Login.html";
+		}
+		vmStyle.stylelist = ret;
+
+	});
+	
+	$.post("getAllDepts.do?random=" + Math.random(), "", function(ret) {
+		if (ret.error == "-1") {
+			alert(ret.msg);
+			top.location.href = "/NewWorld_LIYING/Login.html";
+		}
+		vm.ulist = ret;
+
+	});
+	
+});
+function getBrands(){
+	//alert($("#variety").val());
+	$.post("getBrand.do?random=" + Math.random(), "dept="+$("#variety").val(), function(ret) {
+		if (ret.error == "-1") {
+			alert(ret.msg);
+			top.location.href = "/NewWorld_LIYING/Login.html";
+		}
+		
+		
+		for(var o in ret){
+		      ret[o].transcount=0;
+		      ret[o].skucount=0;
+		      ret[o].stockNumber=0;
+		      ret[o].stockAmt=0;
+		      ret[o].soldSku=0;
+		      ret[o].soldCount=0;
+		      ret[o].soldAmt=0;
+		      ret[o].qms=0;
+		      
+		}
+		
+		vmbrand.brandlist = ret;
+		
+
+	});
+}
+</script>
+</head>
+
+<body>
+	<div class="div_head">
+		<span> <span style="float: left;">销售录入</span>
+		</span>
+	</div>
+	<div class="container-fluid">
+
+		<hr>
+		<div class="row-fluid " style="margin-top: 10px;">
+			<form class="form-inline" role="form">
+				<div class=" form-group clearfix" style="margin-bottom: 10px" id="varietydiv">
+					<label>种类</label> 
+					<select id="variety" name="variety" class="form-control">
+						<option  v-for="(uitem,index) in ulist" :value="uitem.dept">{{uitem.ddesci}}</option>
+					</select>
+				</div>
+				<div class=" form-group clearfix" style="margin-bottom: 10px" id="stylediv">
+					<label>款式:</label> 
+					<select id="style" name="style" class="form-control">
+					<option  v-for="(uitem1,index) in stylelist" :value="uitem1.seasoncode">{{uitem1.seasondesci}}</option>
+						
+					</select>
+				</div>
+				
+				<div class=" form-group clearfix" style="margin-bottom: 10px">
+					<label>销售周期年</label>
+					<input type="text" value="" 
+						id="year" class="form-control"/>
+						<label>月</label>
+					<input type="text" value="" 
+						id="month" class="form-control"/>
+						<label>周</label>
+					<select id="week" name="week" class="form-control">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+					</select>
+				</div>
+				
+				<div class=" form-group clearfix" style="margin-bottom: 10px">
+					<button class=" btn btn-primary" type="button"
+						onclick="getBrands()">查询</button>
+				</div>
+				
+			</form>
+		</div>
+		<div class="row-fluid">
+			<div class="span12" id="table_content">
+
+				<hr>
+
+				<table id="tbStu" class="table">
+					<thead>
+						<tr>
+							<th>品牌编号</th>
+							<th>品牌名称</th>
+							<th>款式名称</th>
+							<th>交易笔数</th>
+							<th>SKU数</th>
+							<th>库存</th>
+							<th>库存金额</th>
+							<th>销售的SKU</th>
+							<th>销售件数</th>
+							<th>销售金额</th>
+							<th>齐码数</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(uitem2,index) in brandlist">
+							<td>{{uitem2.brand}}</td>
+							<td>{{uitem2.bdesci}}</td>
+							<td>{{uitem2.styledesci}}</td>
+							<td><input :value="uitem2.transcount" type="text" size="8" class="form-control"/></td>
+							<td><input :value="uitem2.skucount" type="text" size="8" class="form-control"/></td>
+							<td><input :value="uitem2.stockNumber" type="text" size="8" class="form-control"/></td>
+							<td><input :value="uitem2.stockAmt" type="text" size="8" class="form-control"/></td>
+							<td><input :value="uitem2.soldSku" type="text" size="8" class="form-control"/></td>
+							<td><input :value="uitem2.soldCount" type="text" size="8" class="form-control"/></td>
+							<td><input :value="uitem2.soldAmt" type="text" size="8" class="form-control"/></td>
+							<td><input :value="uitem2.qms" type="text" size="8" class="form-control"/></td>
+		      
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

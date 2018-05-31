@@ -91,35 +91,45 @@ $(function(){
 	var data = [
 	        	{
 	        		name : '男装',
-	        		value:[1000,2000,3000,4000,3000,2000],
+	        		value:[1000,2000,3000,4000,3000,2000,2500],
 	        		color:'#1f6e92',
 	        		line_width:3
-	        	},
-	        	{
-	        		name : '女装',
-	        		value:[3000,1000,6000,2000,3000,1000],
-	        		color:'	#252525',
-	        		line_width:3
-	        	},
-	        	{
-	        		name : '儿童',
-	        		value:[4000,3000,2000,2000,1000,1000],
-	        		color:'#ec4646',
-	        		line_width:3
-	        	},
+	        	}
+	        	
 	       ];
+	var labels=["T恤","背心","短裤","外套","短裤","长裤","毛衣","大衣"];
 	var chart = new iChart.LineBasic2D({
 				render : 'canvasDiv',
 				data: data,
-				title : '北京2012年平均温度情况',
+				//align:'center',
+				title : '种类销售对比',
 				width : document.body.clientWidth * 0.8,
-				height : document.body.clientHeight * 0.95,
+				height : document.body.clientHeight * 0.90,
+				
+				
+				shadow_offsetx : 0,
+				shadow_offsety : 0,
+				//background_color:'#2e2e2e',
 				coordinate:{height:'90%',background_color:'#f6f9fa'},
 				sub_option:{
-					hollow_inside:false,//设置一个点的亮色在外环的效果
+					smooth : true,//平滑曲线
+					//hollow_inside:false,//设置一个点的亮色在外环的效果
 					point_size:16
 				},
-				labels:["T恤","背兴","短裤","外套","短裤","长裤"]
+				tip:{
+					enable:true,
+					shadow:true
+				},
+				legend : {
+					enable : false
+				},
+				crosshair:{
+					enable:true,
+					line_color:'#62bce9'
+				},
+				labels:labels
+				
+				
 			});
 	chart.draw();
 });
