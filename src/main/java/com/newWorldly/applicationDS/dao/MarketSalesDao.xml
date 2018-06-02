@@ -4,7 +4,7 @@
     "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 
 <sqlMap namespace="MarketSales">	
-<sqlMap namespace="MarketSales">
+
 	<resultMap id="getDeptRet" class="java.util.HashMap">
 		<result property="dept" column="dept" />
 		<result property="ddesci" column="ddesci" />
