@@ -3,6 +3,7 @@
     PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
     "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 
+<sqlMap namespace="MarketSales">	
 <sqlMap namespace="MarketSales">
 	<resultMap id="getDeptRet" class="java.util.HashMap">
 		<result property="dept" column="dept" />
@@ -10,6 +11,7 @@
 	</resultMap>
 	<select id="getDept" parameterClass="java.util.Map"
 		resultMap="getDeptRet">
+		SELECT distinct dept ,ddesci  FROM basic
 		SELECT distinct dept ,ddesci FROM basic
 
 	</select>
@@ -20,6 +22,7 @@
 	</resultMap>
 	<select id="getStyle" parameterClass="java.util.Map"
 		resultMap="getStyleRet">
+		SELECT distinct stylecode ,styledesci  FROM style
 		SELECT distinct stylecode ,styledesci FROM style
 
 	</select>
@@ -32,9 +35,11 @@
 	<select id="getseason" parameterClass="java.util.Map"
 		resultMap="getseasonRet">
 		SELECT seasoncode ,seasondesci
+  		FROM season
 		FROM season
 
 	</select>
+	
 
 	<resultMap id="getBrandRet" class="java.util.HashMap">
 		<result property="id" column="id" />
@@ -80,6 +85,10 @@
 		on t2.dept=t1.dept and t2.brand=t1.brand and t2.stylecode=t1.stylecode
 		and t2.week=#week# and t2.seasoncode=#seasoncode#
 		
+	SELECT  basic.ID as id ,basic.brand as brand ,basic.bdesci as bdesci ,basic.dept as dept,basic.ddesci as ddesci,
+	DeptStyle.stylecode as stylecode,style.styledesci as styledesci
+ 	FROM basic ,DeptStyle,style
+ 	where basic.dept=#dept# and basic.dept=DeptStyle.deptcode and DeptStyle.stylecode=style.stylecode
 		order by t1.brand,t1.stylecode
 	</select>
 	
