@@ -74,8 +74,13 @@ $(function() {
 	
 });
 function getBrands(){
+	if($("#year").val()=="" || $("#month").val()==""){
+		alert("请输入销售周期");
+		return ;
+	}
 	//alert($("#variety").val());
-	$.post("getBrand.do?random=" + Math.random(), "dept="+$("#variety").val(), function(ret) {
+	var week=$("#year").val()+"-"+$("#month").val()+"-"+$("#week").val();
+	$.post("getBrand.do?random=" + Math.random(), "dept="+$("#variety").val()+"&week="+week+"&season="+$("#season").val(), function(ret) {
 		if (ret.error == "-1") {
 			alert(ret.msg);
 			top.location.href = "/NewWorld_LIYING/Login.html";
@@ -83,20 +88,37 @@ function getBrands(){
 		
 		
 		for(var o in ret){
-		      ret[o].transcount=0;
-		      ret[o].skucount=0;
-		      ret[o].stockNumber=0;
-		      ret[o].stockAmt=0;
-		      ret[o].soldSku=0;
-		      ret[o].soldCount=0;
-		      ret[o].soldAmt=0;
-		      ret[o].qms=0;
-		      
+			ret[o].week=$("#year").val()+"-"+$("#month").val()+"-"+$("#week").val();
+			ret[o].seasoncode=$("#season").val();
+		      if (ret[o].dealnum==null){ret[o].dealnum=0};
+		      if (ret[o].skunum==null){ret[o].skunum=0};
+		      if (ret[o].stocknum==null){ret[o].stocknum=0};
+		      if (ret[o].stockamount==null){ret[o].stockamount=0};
+		      if (ret[o].saleskunum==null){ret[o].saleskunum=0};
+		      if (ret[o].qtynum==null){ret[o].qtynum=0};
+		      if (ret[o].salesamount==null){ret[o].salesamount=0};
+		      if (ret[o].setnum==null){ret[o].setnum=0};
 		}
 		
 		vmbrand.brandlist = ret;
 		
 
+	});
+}
+function mysubmit(){
+	//alert(vmbrand.brandlist[0].dealnum);
+	
+	$.post("saveSales.do?random=" + Math.random(), "reqStr="+JSON.stringify(vmbrand.brandlist), function(ret) {
+		if (ret.error == "-1") {
+			alert(ret.msg);
+			top.location.href = "/NewWorld_LIYING/Login.html";
+			return;
+		}
+		if (ret.error == "0") {
+			getBrands();
+			alert("保存成功");
+			
+		}
 	});
 }
 </script>
@@ -120,7 +142,7 @@ function getBrands(){
 				</div>
 				<div class=" form-group clearfix" style="margin-bottom: 10px" id="stylediv">
 					<label>款式:</label> 
-					<select id="style" name="style" class="form-control">
+					<select id="season" name="season" class="form-control">
 					<option  v-for="(uitem1,index) in stylelist" :value="uitem1.seasoncode">{{uitem1.seasondesci}}</option>
 						
 					</select>
@@ -148,7 +170,7 @@ function getBrands(){
 				</div>
 				<div class=" form-group clearfix" style="margin-bottom: 10px">
 					<button class=" btn btn-primary" type="button"
-						onclick="submit()">提交</button>
+						onclick="mysubmit()">提交</button>
 				</div>
 				
 			</form>
@@ -179,14 +201,14 @@ function getBrands(){
 							<td>{{uitem2.brand}}</td>
 							<td>{{uitem2.bdesci}}</td>
 							<td>{{uitem2.styledesci}}</td>
-							<td><input :value="uitem2.transcount" type="text" size="8" class="form-control"/></td>
-							<td><input :value="uitem2.skucount" type="text" size="8" class="form-control"/></td>
-							<td><input :value="uitem2.stockNumber" type="text" size="8" class="form-control"/></td>
-							<td><input :value="uitem2.stockAmt" type="text" size="8" class="form-control"/></td>
-							<td><input :value="uitem2.soldSku" type="text" size="8" class="form-control"/></td>
-							<td><input :value="uitem2.soldCount" type="text" size="8" class="form-control"/></td>
-							<td><input :value="uitem2.soldAmt" type="text" size="8" class="form-control"/></td>
-							<td><input :value="uitem2.qms" type="text" size="8" class="form-control"/></td>
+							<td><input v-model="brandlist[index].dealnum" :value="uitem2.dealnum" type="text" size="8" class="form-control"/></td>
+							<td><input v-model="brandlist[index].skunum" :value="uitem2.skunum" type="text" size="8" class="form-control"/></td>
+							<td><input v-model="brandlist[index].stocknum" :value="uitem2.stocknum" type="text" size="8" class="form-control"/></td>
+							<td><input v-model="brandlist[index].stockamount" :value="uitem2.stockamount" type="text" size="8" class="form-control"/></td>
+							<td><input v-model="brandlist[index].saleskunum" :value="uitem2.saleskunum" type="text" size="8" class="form-control"/></td>
+							<td><input v-model="brandlist[index].qtynum" :value="uitem2.qtynum" type="text" size="8" class="form-control"/></td>
+							<td><input v-model="brandlist[index].salesamount" :value="uitem2.salesamount" type="text" size="8" class="form-control"/></td>
+							<td><input v-model="brandlist[index].setnum" :value="uitem2.setnum" type="text" size="8" class="form-control"/></td>
 		      
 						</tr>
 
